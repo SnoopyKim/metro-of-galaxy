@@ -1,6 +1,10 @@
+import GalaxyMap from "./components/GalaxyMap";
+
 function App() {
   return (
-    <p>Metro of Galaxy</p>
+    <div id="galaxy-container">
+      <GalaxyMap />
+    </div>
   );
 }
 
