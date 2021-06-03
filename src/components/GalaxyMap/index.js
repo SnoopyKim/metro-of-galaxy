@@ -4,7 +4,8 @@ import { useSpring, animated, config } from "@react-spring/three";
 import { Stars, useAspect, useTexture } from "@react-three/drei";
 import bg_planet from "../../assets/images/planet.jpg"
 import * as THREE from "three";
-import { gsap } from "gsap";
+// import { gsap } from "gsap";
+import { gsap, Linear } from "gsap/all";
 
 // 2호선 대략 좌표
 const coords = [
@@ -53,7 +54,7 @@ const coords = [
 
 export default function GalaxyMap() {
     const [target, setTarget] = useState(null)
-    
+
     return (
         <Canvas>
             <color attach="background" args={["black"]} />
@@ -65,8 +66,9 @@ export default function GalaxyMap() {
                     <Planet 
                         key={`${coord.x}-${coord.y}=${coord.z}`} 
                         position={coord} 
-                        zoomIn={() => setTarget(coord)} 
-                        zoomOut={() => setTarget(null)}
+                        selected={target === coord}
+                        onClick={(planet) => setTarget(coord)} 
+                        onDoubleClick={() => setTarget(null)}
                         />
                 )}
             </Suspense>
@@ -120,7 +122,8 @@ const Camera = ({ target }) => {
     return null;
 }
 
-const Planet = ({ position, zoomIn, zoomOut }) => {
+const Planet = ({ position, selected, onClick, onDoubleClick }) => {
+    const planet = useRef()
     const [hovered, setHovered] = useState(false)
     const { scale } = useSpring({
         scale: hovered ? 2 : 1,
@@ -128,14 +131,35 @@ const Planet = ({ position, zoomIn, zoomOut }) => {
     })
     const planetTexture = useTexture(bg_planet)
 
+    // 행성 회전
+    // TODO: stop이 안돼....
+    const rotate = gsap.fromTo(planet.current?.rotation, {
+        y: 0,
+    },{
+        duration: 10,
+        y: Math.PI * 2,
+        repeat: -1,
+        ease: Linear.easeNone
+    }).paused(!selected)
+
     return (
         <animated.mesh
+            ref={planet}
             position={position || [0, 0, 0]}
             scale={scale}
-            onClick={(e) => zoomIn()}
-            onDoubleClick={(e) => zoomOut()}
-            onPointerEnter={(e) => setHovered(true)}
-            onPointerLeave={(e) => setHovered(false)}
+            onClick={(e) => {
+                if (selected) return;
+                onClick(planet)
+                setHovered(false)
+                rotate.play()
+            }}
+            onDoubleClick={(e) => {
+                if (!selected) return;
+                rotate.pause()
+                onDoubleClick()
+            }}
+            onPointerEnter={(e) => !selected && setHovered(true)}
+            onPointerLeave={(e) => !selected && setHovered(false)}
         >
             <sphereGeometry args={[0.5, 100, 100]} />
             <meshBasicMaterial attach="material" color={'#009D3E'} map={planetTexture}  />
