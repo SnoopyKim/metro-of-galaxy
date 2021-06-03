@@ -6,20 +6,58 @@ import bg_planet from "../../assets/images/planet.jpg"
 import * as THREE from "three";
 import { gsap } from "gsap";
 
+// 2호선 대략 좌표
 const coords = [
-    new THREE.Vector3(0, 0, 0),
-    new THREE.Vector3(2, 2, 0),
-    new THREE.Vector3(-2, -2, 0),
+    new THREE.Vector3(1, -39, 0),
+    new THREE.Vector3(6, -39, 0),
+    new THREE.Vector3(11, -39, 0),
+    new THREE.Vector3(16, -39, 0),
+    new THREE.Vector3(24, -39, 0),
+    new THREE.Vector3(31, -39, 0),
+    new THREE.Vector3(39, -39, 0),
+    new THREE.Vector3(45, -36, 0),
+    new THREE.Vector3(48, -31, 0),
+    new THREE.Vector3(51, -24, 0),
+    new THREE.Vector3(51, -19, 0),
+    new THREE.Vector3(51, -10, 0),
+    new THREE.Vector3(51, 3, 0),
+    new THREE.Vector3(51, 7, 0),
+    new THREE.Vector3(51, 13, 0),
+    new THREE.Vector3(50, 26, 0),
+    new THREE.Vector3(46, 31, 0),
+    new THREE.Vector3(40, 35, 0),
+    new THREE.Vector3(29, 35, 0),
+    new THREE.Vector3(18, 35, 0),
+    new THREE.Vector3(6, 35, 0),
+    new THREE.Vector3(1, 35, 0),
+    new THREE.Vector3(-5, 35, 0),
+    new THREE.Vector3(-10, 35, 0),
+    new THREE.Vector3(-15, 35, 0),
+    new THREE.Vector3(-25, 35, 0),
+    new THREE.Vector3(-34, 35, 0),
+    new THREE.Vector3(-40, 34, 0),
+    new THREE.Vector3(-47, 30, 0),
+    new THREE.Vector3(-50, 23, 0),
+    new THREE.Vector3(-50, 13, 0),
+    new THREE.Vector3(-50, 2, 0),
+    new THREE.Vector3(-50, -6, 0),
+    new THREE.Vector3(-50, -15, 0),
+    new THREE.Vector3(-49, -28, 0),
+    new THREE.Vector3(-45, -34, 0),
+    new THREE.Vector3(-39, -38, 0),
+    new THREE.Vector3(-31, -39, 0),
+    new THREE.Vector3(-23, -39, 0),
+    new THREE.Vector3(-15, -39, 0),
+    new THREE.Vector3(-7, -39, 0),
 ]
 
 export default function GalaxyMap() {
     const [target, setTarget] = useState(null)
-
+    
     return (
         <Canvas>
             <color attach="background" args={["black"]} />
-            {/* <ambientLight intensity={0.1} />
-            <directionalLight /> */}
+            <ambientLight intensity={0.8} />
             <Camera target={target}/>
             <Suspense fallback={<Loading />}>
                 <Stars radius={100}/>
@@ -64,7 +102,7 @@ const Camera = ({ target }) => {
         duration: 1,
         x: target.x,
         y: target.y,
-        z: 10,
+        z: 3,
         onUpdate: function () {
             camera.updateProjectionMatrix();
         }
@@ -74,7 +112,7 @@ const Camera = ({ target }) => {
         duration: 1,
         x: 0,
         y: 0,
-        z: 30,
+        z: 80,
         onUpdate: function () {
             camera.updateProjectionMatrix();
         }
@@ -85,7 +123,7 @@ const Camera = ({ target }) => {
 const Planet = ({ position, zoomIn, zoomOut }) => {
     const [hovered, setHovered] = useState(false)
     const { scale } = useSpring({
-        scale: hovered ? 1.5 : 1,
+        scale: hovered ? 2 : 1,
         config: config.wobbly
     })
     const planetTexture = useTexture(bg_planet)
@@ -100,7 +138,7 @@ const Planet = ({ position, zoomIn, zoomOut }) => {
             onPointerLeave={(e) => setHovered(false)}
         >
             <sphereGeometry args={[0.5, 100, 100]} />
-            <meshBasicMaterial attach="material" color={'royalblue'} map={planetTexture}  />
+            <meshBasicMaterial attach="material" color={'#009D3E'} map={planetTexture}  />
         </animated.mesh>
     )
 }
