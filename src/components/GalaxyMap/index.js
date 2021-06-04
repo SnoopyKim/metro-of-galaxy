@@ -9,6 +9,8 @@ import { gsap, Power2 } from "gsap/all";
 import coords from '../../resources/coords';
 import colors from '../../resources/colors';
 
+const radian = Math.PI / 180;
+
 export default function GalaxyMap() {
     const [target, setTarget] = useState(null)
     
@@ -91,13 +93,14 @@ const Planet = ({ position, selected, onClick, onDoubleClick }) => {
         scale: hovered ? 2 : 1,
         config: config.wobbly
     })
-    const planetTexture = useTexture(images.planet.default)
+    const [planetTexture, glowTexture] = useTexture([images.planet.default, images.glow.default])
 
     useFrame(() => selected && (planet.current.rotation.y += 0.01))
 
     return (
-        <animated.mesh
+        <animated.group 
             ref={planet}
+            rotation={new THREE.Euler(90*radian, 0, 0)}
             position={position || [0, 0, 0]}
             scale={scale}
             onClick={(e) => {
@@ -108,9 +111,51 @@ const Planet = ({ position, selected, onClick, onDoubleClick }) => {
             onDoubleClick={(e) => selected && onDoubleClick()}
             onPointerEnter={(e) => !selected && setHovered(true)}
             onPointerLeave={(e) => !selected && setHovered(false)}
-        >
-            <sphereGeometry args={[0.5, 100, 100]} />
-            <meshBasicMaterial attach="material" color={colors.metro.two} map={planetTexture}  />
-        </animated.mesh>
+            >
+        <mesh>
+            <sphereGeometry args={[0.5, 50, 50, 0, 90*radian, 0, 180*radian]} />
+            <meshBasicMaterial 
+                attach="material" 
+                color={colors.metro.one} 
+                map={planetTexture} />
+        </mesh>
+        <mesh>
+            <sphereGeometry args={[0.5, 50, 50, 90*radian, 90*radian, 0, 180*radian]} />
+            <meshBasicMaterial 
+                attach="material" 
+                color={colors.metro.two} 
+                map={planetTexture} />
+        </mesh>
+        <mesh>
+            <sphereGeometry args={[0.5, 50, 50, 180*radian, 90*radian, 0, 180*radian]} />
+            <meshBasicMaterial 
+                attach="material" 
+                color={colors.metro.three} 
+                map={planetTexture} />
+        </mesh>
+        <mesh>
+            <sphereGeometry args={[0.5, 50, 50, 270*radian, 90*radian, 0, 180*radian]} />
+            <meshBasicMaterial 
+                attach="material" 
+                color={colors.metro.four} 
+                map={planetTexture} />
+        </mesh>
+        <sprite scale={[2.5, 2.5, 1.0]}>
+                <spriteMaterial 
+                    attach="material" 
+                    opacity={0.5} 
+                    color={colors.metro.three} 
+                    blending={THREE.AdditiveBlending} 
+                    map={glowTexture} />
+            </sprite>
+            <sprite scale={[2.5, 2.5, 1.0]}>
+                <spriteMaterial 
+                    attach="material" 
+                    opacity={1.0} 
+                    color={colors.metro.one}
+                    blending={THREE.AdditiveBlending} 
+                    map={glowTexture} />
+            </sprite>
+        </animated.group>
     )
 }
