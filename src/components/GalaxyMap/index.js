@@ -2,58 +2,26 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import React, { Suspense, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { useSpring, animated, config } from "@react-spring/three";
 import { Stars, useAspect, useTexture } from "@react-three/drei";
-import bg_planet from "../../assets/images/planet.jpg"
+import images from "../../resources/images"
 import * as THREE from "three";
 // import { gsap } from "gsap";
-import { gsap, Linear } from "gsap/all";
-
-// 2호선 대략 좌표
-const coords = [
-    new THREE.Vector3(1, -39, 0),
-    new THREE.Vector3(6, -39, 0),
-    new THREE.Vector3(11, -39, 0),
-    new THREE.Vector3(16, -39, 0),
-    new THREE.Vector3(24, -39, 0),
-    new THREE.Vector3(31, -39, 0),
-    new THREE.Vector3(39, -39, 0),
-    new THREE.Vector3(45, -36, 0),
-    new THREE.Vector3(48, -31, 0),
-    new THREE.Vector3(51, -24, 0),
-    new THREE.Vector3(51, -19, 0),
-    new THREE.Vector3(51, -10, 0),
-    new THREE.Vector3(51, 3, 0),
-    new THREE.Vector3(51, 7, 0),
-    new THREE.Vector3(51, 13, 0),
-    new THREE.Vector3(50, 26, 0),
-    new THREE.Vector3(46, 31, 0),
-    new THREE.Vector3(40, 35, 0),
-    new THREE.Vector3(29, 35, 0),
-    new THREE.Vector3(18, 35, 0),
-    new THREE.Vector3(6, 35, 0),
-    new THREE.Vector3(1, 35, 0),
-    new THREE.Vector3(-5, 35, 0),
-    new THREE.Vector3(-10, 35, 0),
-    new THREE.Vector3(-15, 35, 0),
-    new THREE.Vector3(-25, 35, 0),
-    new THREE.Vector3(-34, 35, 0),
-    new THREE.Vector3(-40, 34, 0),
-    new THREE.Vector3(-47, 30, 0),
-    new THREE.Vector3(-50, 23, 0),
-    new THREE.Vector3(-50, 13, 0),
-    new THREE.Vector3(-50, 2, 0),
-    new THREE.Vector3(-50, -6, 0),
-    new THREE.Vector3(-50, -15, 0),
-    new THREE.Vector3(-49, -28, 0),
-    new THREE.Vector3(-45, -34, 0),
-    new THREE.Vector3(-39, -38, 0),
-    new THREE.Vector3(-31, -39, 0),
-    new THREE.Vector3(-23, -39, 0),
-    new THREE.Vector3(-15, -39, 0),
-    new THREE.Vector3(-7, -39, 0),
-]
+import { gsap, Power2 } from "gsap/all";
+import coords from '../../resources/coords';
+import colors from '../../resources/colors';
 
 export default function GalaxyMap() {
     const [target, setTarget] = useState(null)
+    
+    // ! return문 안에서 map을 바로 쓰지말고 따로 빼놔야 Hooks 규칙을 피할 수 있음 !
+    const planets = coords.map((coord) => 
+        <Planet 
+            key={coord.join('-')} 
+            position={coord} 
+            selected={target === coord}
+            onClick={(planet) => setTarget(coord)} 
+            onDoubleClick={() => setTarget(null)}
+            />
+    )
 
     return (
         <Canvas>
@@ -62,15 +30,7 @@ export default function GalaxyMap() {
             <Camera target={target}/>
             <Suspense fallback={<Loading />}>
                 <Stars radius={100}/>
-                {coords.map((coord) => 
-                    <Planet 
-                        key={`${coord.x}-${coord.y}=${coord.z}`} 
-                        position={coord} 
-                        selected={target === coord}
-                        onClick={(planet) => setTarget(coord)} 
-                        onDoubleClick={() => setTarget(null)}
-                        />
-                )}
+                {planets}
             </Suspense>
         </Canvas>
     )
@@ -102,12 +62,13 @@ const Camera = ({ target }) => {
 
     const zoomIn = () => gsap.to(camera.position, {
         duration: 1,
-        x: target.x,
-        y: target.y,
+        x: target[0],
+        y: target[1],
         z: 3,
         onUpdate: function () {
             camera.updateProjectionMatrix();
-        }
+        },
+        ease: Power2.easeOut
     } );
 
     const zoomOut = () => gsap.to(camera.position, {
@@ -117,7 +78,8 @@ const Camera = ({ target }) => {
         z: 80,
         onUpdate: function () {
             camera.updateProjectionMatrix();
-        }
+        },
+        ease: Power2.easeIn
     })
     return null;
 }
@@ -129,18 +91,9 @@ const Planet = ({ position, selected, onClick, onDoubleClick }) => {
         scale: hovered ? 2 : 1,
         config: config.wobbly
     })
-    const planetTexture = useTexture(bg_planet)
+    const planetTexture = useTexture(images.planet.default)
 
-    // 행성 회전
-    // TODO: stop이 안돼....
-    const rotate = gsap.fromTo(planet.current?.rotation, {
-        y: 0,
-    },{
-        duration: 10,
-        y: Math.PI * 2,
-        repeat: -1,
-        ease: Linear.easeNone
-    }).paused(!selected)
+    useFrame(() => selected && (planet.current.rotation.y += 0.01))
 
     return (
         <animated.mesh
@@ -151,18 +104,13 @@ const Planet = ({ position, selected, onClick, onDoubleClick }) => {
                 if (selected) return;
                 onClick(planet)
                 setHovered(false)
-                rotate.play()
             }}
-            onDoubleClick={(e) => {
-                if (!selected) return;
-                rotate.pause()
-                onDoubleClick()
-            }}
+            onDoubleClick={(e) => selected && onDoubleClick()}
             onPointerEnter={(e) => !selected && setHovered(true)}
             onPointerLeave={(e) => !selected && setHovered(false)}
         >
             <sphereGeometry args={[0.5, 100, 100]} />
-            <meshBasicMaterial attach="material" color={'#009D3E'} map={planetTexture}  />
+            <meshBasicMaterial attach="material" color={colors.metro.two} map={planetTexture}  />
         </animated.mesh>
     )
 }
