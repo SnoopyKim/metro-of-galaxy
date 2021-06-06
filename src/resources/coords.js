@@ -45,3 +45,19 @@ const coords = [
 ]
 
 export default coords;
+
+const radian = Math.PI / 180;
+
+export const threeValues = {
+    background: {
+        position: [ 0, 0, 0 ],
+        rotation: [ 0, 90*radian, 0 ],
+        sphere: [ 150, 16, 16 ]
+    },
+    main: {
+        position: [ 0, 0, -60 ],
+        rotation: [ 23.4*radian, 0*radian, 23.4*radian ],
+        sphere: [ 1, 16, 16 ]
+    },
+}
+
