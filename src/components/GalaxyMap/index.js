@@ -1,7 +1,7 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import React, { Suspense, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { useSpring, animated, config } from "@react-spring/three";
-import { Stars, useAspect, useTexture } from "@react-three/drei";
+import { OrbitControls, Stars, useAspect, useTexture } from "@react-three/drei";
 import images from "../../resources/images"
 import * as THREE from "three";
 // import { gsap } from "gsap";
@@ -31,7 +31,7 @@ export default function GalaxyMap() {
             <ambientLight intensity={0.8} />
             <Camera target={target}/>
             <Suspense fallback={<Loading />}>
-                <Stars radius={100}/>
+                <Background />
                 {planets}
             </Suspense>
         </Canvas>
@@ -54,6 +54,18 @@ const Loading = () => {
     );
 }
 
+const Background = () => (
+    <mesh position={[0,0,0]} rotation={new THREE.Euler(0, 90*radian, 0)}>
+        <sphereGeometry attach="geometry" args={[150, 16, 16]} />
+        <meshBasicMaterial
+            attach="material"
+            map={useTexture(images.galaxy.default)}
+            side={THREE.BackSide}
+        />
+    </mesh>
+
+)
+
 
 const Camera = ({ target }) => {
     const { camera } = useThree();
@@ -63,10 +75,10 @@ const Camera = ({ target }) => {
     }, [target])
 
     const zoomIn = () => gsap.to(camera.position, {
-        duration: 1,
-        x: target[0],
-        y: target[1],
-        z: 3,
+        duration: 1.5,
+        x: 0,
+        y: 0,
+        z: -45,
         onUpdate: function () {
             camera.updateProjectionMatrix();
         },
@@ -77,7 +89,7 @@ const Camera = ({ target }) => {
         duration: 1,
         x: 0,
         y: 0,
-        z: 80,
+        z: 120,
         onUpdate: function () {
             camera.updateProjectionMatrix();
         },
@@ -93,14 +105,14 @@ const Planet = ({ position, selected, onClick, onDoubleClick }) => {
         scale: hovered ? 2 : 1,
         config: config.wobbly
     })
-    const [planetTexture, glowTexture] = useTexture([images.planet.default, images.glow.default])
+    const [planetTexture, glowTexture] = useTexture([images.mars.default, images.glow.default])
 
     useFrame(() => selected && (planet.current.rotation.y += 0.01))
 
     return (
         <animated.group 
             ref={planet}
-            rotation={new THREE.Euler(90*radian, 0, 0)}
+            // rotation={new THREE.Euler(90*radian, 0, 0)}
             position={position || [0, 0, 0]}
             scale={scale}
             onClick={(e) => {
@@ -113,18 +125,34 @@ const Planet = ({ position, selected, onClick, onDoubleClick }) => {
             onPointerLeave={(e) => !selected && setHovered(false)}
             >
         <mesh>
-            <sphereGeometry args={[0.5, 50, 50, 0, 90*radian, 0, 180*radian]} />
+            <sphereGeometry args={[0.5, 50, 50, 0, 360*radian, 0, 180*radian]} />
             <meshBasicMaterial 
                 attach="material" 
-                color={colors.metro.one} 
+                // color={colors.metro.sinbundang} 
                 map={planetTexture} />
+            {/* <sprite scale={[3, 3, 1.0]}>
+                <spriteMaterial 
+                    attach="material" 
+                    opacity={0.5} 
+                    color={colors.metro.sinbundang} 
+                    blending={THREE.AdditiveBlending} 
+                    map={glowTexture} />
+            </sprite> */}
         </mesh>
-        <mesh>
+        {/* <mesh>
             <sphereGeometry args={[0.5, 50, 50, 90*radian, 90*radian, 0, 180*radian]} />
             <meshBasicMaterial 
                 attach="material" 
                 color={colors.metro.two} 
                 map={planetTexture} />
+            <sprite position={[0.25,0,0.25]} scale={[2.0, 2.0, 1.0]}>
+                <spriteMaterial 
+                    attach="material" 
+                    opacity={0.5} 
+                    color={colors.metro.two} 
+                    blending={THREE.AdditiveBlending} 
+                    map={glowTexture} />
+            </sprite>
         </mesh>
         <mesh>
             <sphereGeometry args={[0.5, 50, 50, 180*radian, 90*radian, 0, 180*radian]} />
@@ -132,15 +160,7 @@ const Planet = ({ position, selected, onClick, onDoubleClick }) => {
                 attach="material" 
                 color={colors.metro.three} 
                 map={planetTexture} />
-        </mesh>
-        <mesh>
-            <sphereGeometry args={[0.5, 50, 50, 270*radian, 90*radian, 0, 180*radian]} />
-            <meshBasicMaterial 
-                attach="material" 
-                color={colors.metro.four} 
-                map={planetTexture} />
-        </mesh>
-        <sprite scale={[2.5, 2.5, 1.0]}>
+            <sprite position={[0.25,0,-0.25]} scale={[2.0, 2.0, 1.0]}>
                 <spriteMaterial 
                     attach="material" 
                     opacity={0.5} 
@@ -148,14 +168,22 @@ const Planet = ({ position, selected, onClick, onDoubleClick }) => {
                     blending={THREE.AdditiveBlending} 
                     map={glowTexture} />
             </sprite>
-            <sprite scale={[2.5, 2.5, 1.0]}>
+        </mesh>
+        <mesh>
+            <sphereGeometry args={[0.5, 50, 50, 270*radian, 90*radian, 0, 180*radian]} />
+            <meshBasicMaterial 
+                attach="material" 
+                color={colors.metro.four} 
+                map={planetTexture} />
+            <sprite position={[-0.25,0,-0.25]} scale={[2.0, 2.0, 1.0]}>
                 <spriteMaterial 
                     attach="material" 
-                    opacity={1.0} 
-                    color={colors.metro.one}
+                    opacity={0.5} 
+                    color={colors.metro.four} 
                     blending={THREE.AdditiveBlending} 
                     map={glowTexture} />
             </sprite>
+        </mesh> */}
         </animated.group>
     )
 }
