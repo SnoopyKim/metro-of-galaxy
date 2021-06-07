@@ -1,5 +1,5 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import React, { Suspense, useEffect, useImperativeHandle, useRef, useState } from "react";
+import React, { Suspense, useCallback, useContext, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { useSpring, animated, config } from "@react-spring/three";
 import { OrbitControls, Stars, useAspect, useTexture } from "@react-three/drei";
 import images from "../../resources/images"
@@ -8,18 +8,19 @@ import * as THREE from "three";
 import { gsap, Power2 } from "gsap/all";
 import coords, { threeValues } from '../../resources/coords';
 import colors from '../../resources/colors';
+import { Context } from "../../App";
 
 export default function GalaxyMap() {
-    const [target, setTarget] = useState(null)
+    const { station, setStation } = useContext(Context)
     
     useEffect(() => {
         document.onkeydown = event => {
             switch (event.code) {
                 case 'Enter':
-                    setTarget(threeValues.main.position);
+                    setStation(threeValues.main.position);
                     break;
                 case 'Backspace':
-                    setTarget(null);
+                    setStation(null);
                     break;
                 default:
                     break;
@@ -32,18 +33,18 @@ export default function GalaxyMap() {
         <PlanetForMap
             key={coord.join('-')} 
             position={coord} 
-            selected={target === coord}
-            onClick={(planet) => setTarget(coord)} 
-            onDoubleClick={() => setTarget(null)}
+            selected={station === coord}
+            onClick={(planet) => setStation(coord)} 
+            onDoubleClick={() => setStation(null)}
             />
     )
 
     return (
-        <Canvas>
-            <Camera target={target}/>
+        <Canvas style={{position: "absolute"}}>
+            <Camera target={station}/>
             <Suspense fallback={<Loading />}>
                 <Background />
-                <PlanetForMain visible={target === threeValues.main.position} />
+                <PlanetForMain visible={station === threeValues.main.position} />
             </Suspense>
         </Canvas>
     )
@@ -80,20 +81,19 @@ const Background = () => (
 const Camera = ({ target }) => {
     const { camera } = useThree();
     useEffect(() => {
-        // console.log(target)
-        target ? zoomIn() : zoomOut()
+        target ? zoomIn(target) : zoomOut()
     }, [target])
 
-    const zoomIn = () => gsap.to(camera.position, {
+    const zoomIn = useCallback((pos) => gsap.to(camera.position, {
         duration: 1.5,
-        x: target[0],
-        y: target[1],
-        z: target[2] + 5,
+        x: pos[0],
+        y: pos[1],
+        z: pos[2] + 5,
         onUpdate: function () {
             camera.updateProjectionMatrix();
         },
         ease: Power2.easeOut
-    } );
+    }), []);
 
     const zoomOut = () => gsap.to(camera.position, {
         duration: 1,
@@ -112,15 +112,16 @@ const PlanetForMain = ({ visible }) => {
     const ref = useRef();
     const [hovered, setHovered] = useState(false)
     const [planetTexture, glowTexture] = useTexture([images.earth.default, images.glow.default]) 
-
+    console.log(hovered)
     useFrame(() => visible && (ref.current.rotation.y += 0.01))
     return (
-        <>
         <group 
             ref={ref} 
             visible={visible} 
             position={threeValues.main.position}
             rotation={threeValues.main.rotation}
+            onClick={(e) => setHovered(true)}
+            onPointerEnter={(e) => setHovered(true)}
             >
             <mesh
                 onPointerEnter={(e) => setHovered(true)}
@@ -141,8 +142,7 @@ const PlanetForMain = ({ visible }) => {
                         map={glowTexture} />
                 </sprite> 
             }
-            </group>
-        </>
+        </group>
     )
 }
 
