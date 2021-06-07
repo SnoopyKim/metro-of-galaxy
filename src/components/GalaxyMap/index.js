@@ -40,8 +40,6 @@ export default function GalaxyMap() {
 
     return (
         <Canvas>
-            <color attach="background" args={["black"]} />
-            <ambientLight intensity={0.8} />
             <Camera target={target}/>
             <Suspense fallback={<Loading />}>
                 <Background />
@@ -118,29 +116,32 @@ const PlanetForMain = ({ visible }) => {
     useFrame(() => visible && (ref.current.rotation.y += 0.01))
     return (
         <>
-        <mesh 
+        <group 
             ref={ref} 
             visible={visible} 
             position={threeValues.main.position}
             rotation={threeValues.main.rotation}
-            onPointerEnter={(e) => setHovered(true)}
-            onPointerLeave={(e) => setHovered(false)}>
-            <sphereGeometry args={threeValues.main.sphere} />
-            <meshBasicMaterial 
-                attach="material" 
-                // color={colors.metro.sinbundang} 
-                map={planetTexture} />
-        </mesh>
-        { hovered && 
-            <sprite position={threeValues.main.position} scale={[5, 5, 1.0]}>
-                <spriteMaterial 
+            >
+            <mesh
+                onPointerEnter={(e) => setHovered(true)}
+                onPointerLeave={(e) => setHovered(false)}>
+                <sphereGeometry args={threeValues.main.sphere} />
+                <meshBasicMaterial 
                     attach="material" 
-                    opacity={1.0} 
-                    color={colors.metro.sinbundang} 
-                    blending={THREE.AdditiveBlending} 
-                    map={glowTexture} />
-            </sprite> 
-        }
+                    color={'#AAA'} 
+                    map={planetTexture} />
+            </mesh>
+            { hovered && 
+                <sprite scale={[5, 5, 1.0]}>
+                    <spriteMaterial 
+                        attach="material" 
+                        opacity={1.0} 
+                        color={colors.metro.sinbundang} 
+                        blending={THREE.AdditiveBlending} 
+                        map={glowTexture} />
+                </sprite> 
+            }
+            </group>
         </>
     )
 }
