@@ -1,5 +1,6 @@
 import { createContext, useCallback, useEffect, useState } from "react";
-import GalaxyMap from "./components/GalaxyMap";
+import BackButton from "./components/BackButton";
+import GalaxyMap from "./components/Galaxy/GalaxyMap";
 import { threeValues } from "./resources/coords";
 import icons from './resources/icons';
 
@@ -26,9 +27,7 @@ function App() {
     <Context.Provider value={contextValue}>
       <GalaxyMap />
       <div id="ui-container">
-        {station && <div id="back" onClick={() => setStation(null)}>
-          <img src={icons.back.default} alt={"Back"}/>
-        </div> }
+        { station && <BackButton /> }
         { station && <span>{station?.name}</span> }
         { !station && <input type="text" value={name} onChange={typeStation} onKeyDown={search}/> }
       </div>
