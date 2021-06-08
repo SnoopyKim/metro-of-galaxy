@@ -1,7 +1,7 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import React, { Suspense, useCallback, useContext, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { useSpring, animated, config } from "@react-spring/three";
-import { OrbitControls, Stars, useAspect, useTexture } from "@react-three/drei";
+import { Html, OrbitControls, Stars, useAspect, useProgress, useTexture } from "@react-three/drei";
 import images from "../../resources/images"
 import * as THREE from "three";
 // import { gsap } from "gsap";
@@ -9,24 +9,10 @@ import { gsap, Power2 } from "gsap/all";
 import coords, { threeValues } from '../../resources/coords';
 import colors from '../../resources/colors';
 import { Context } from "../../App";
+import icons from './../../resources/icons';
 
 export default function GalaxyMap() {
     const { station, setStation } = useContext(Context)
-    
-    useEffect(() => {
-        document.onkeydown = event => {
-            switch (event.code) {
-                case 'Enter':
-                    setStation(threeValues.main.position);
-                    break;
-                case 'Backspace':
-                    setStation(null);
-                    break;
-                default:
-                    break;
-            }
-        }
-    }, [])
 
     // ! return문 안에서 map을 바로 쓰지말고 따로 빼놔야 Hooks 규칙을 피할 수 있음 !
     const planets = coords.map((coord) => 
@@ -44,25 +30,22 @@ export default function GalaxyMap() {
             <Camera target={station}/>
             <Suspense fallback={<Loading />}>
                 <Background />
-                <PlanetForMain visible={station === threeValues.main.position} />
+                <PlanetForMain visible={station?.position === threeValues.main.position} />
             </Suspense>
         </Canvas>
     )
 }
 
 const Loading = () => {
+    const { progress } = useProgress();
     return (
-        <mesh visible position={[0, 0, 0]} rotation={[0, 0, 0]}>
-        <sphereGeometry attach="geometry" args={[1, 16, 16]} />
-        <meshStandardMaterial
-            attach="material"
-            color="white"
-            transparent
-            opacity={0.6}
-            roughness={1}
-            metalness={0}
-        />
-        </mesh>
+        <Html as='div' center style={{top: -100, width: 200}}>
+            <div style={{display: "flex", flexDirection: "row"}}>
+                <img src={icons.react.default} alt={'reactjs'} width={100}/>
+                <img src={icons.three.default} alt={'threejs'} width={100}/>
+            </div>
+            <p style={{width: 200, textAlign: "center"}}>{Math.round(progress)+1} % loaded</p>
+        </Html>
     );
 }
 
@@ -81,7 +64,7 @@ const Background = () => (
 const Camera = ({ target }) => {
     const { camera } = useThree();
     useEffect(() => {
-        target ? zoomIn(target) : zoomOut()
+        target ? zoomIn(target?.position) : zoomOut()
     }, [target])
 
     const zoomIn = useCallback((pos) => gsap.to(camera.position, {
@@ -105,6 +88,8 @@ const Camera = ({ target }) => {
         },
         ease: Power2.easeIn
     })
+
+    
     return null;
 }
 
@@ -112,12 +97,11 @@ const PlanetForMain = ({ visible }) => {
     const ref = useRef();
     const [hovered, setHovered] = useState(false)
     const [planetTexture, glowTexture] = useTexture([images.earth.default, images.glow.default]) 
-    console.log(hovered)
+    
     useFrame(() => visible && (ref.current.rotation.y += 0.01))
     return (
         <group 
             ref={ref} 
-            visible={visible} 
             position={threeValues.main.position}
             rotation={threeValues.main.rotation}
             onClick={(e) => setHovered(true)}

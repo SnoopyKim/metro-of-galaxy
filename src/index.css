@@ -26,4 +26,26 @@ body,
   width: 100%;
   height: 100%;
   display: flex;
+  flex-direction: column;
+}
+
+#ui-container>input {
+  width: 300px;
+  margin: auto;
+}
+
+#ui-container>span {
+  margin: 30px auto;
+  color: white;
+  font-size: large;
+}
+
+#back {
+  position: absolute;
+  display: inherit;
+  top: 20px;
+  left: 20px;
+}
+#back:hover {
+  background-color: rgba(200, 200, 200, 0.5);
 }
