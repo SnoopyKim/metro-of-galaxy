@@ -4,24 +4,19 @@ import GalaxyMap from "./components/Galaxy/GalaxyMap";
 import { threeValues } from "./resources/coords";
 import icons from './resources/icons';
 
-export const Context  = createContext();
+export const Context = createContext();
 
 function App() {
-  const [name, setName] = useState('')
   const [station, setStation] = useState(null);
   const contextValue = { station, setStation };
-
-  const typeStation = (e) => {
-    setName(e.target.value);
-  }
 
   const search = (e) => {
     if (e.code === 'Enter') {
       const name = e.target.value;
       name.length > 0 && setStation({name, position: threeValues.main.position})
-      setName('');
+      e.target.value = '';
     }
-  }  
+  }
 
   return (
     <Context.Provider value={contextValue}>
@@ -29,7 +24,7 @@ function App() {
       <div id="ui-container">
         { station && <BackButton /> }
         { station && <span>{station?.name}</span> }
-        { !station && <input type="text" value={name} onChange={typeStation} onKeyDown={search}/> }
+        { !station && <input type="text" onKeyDown={search}/> }
       </div>
     </Context.Provider>
   );

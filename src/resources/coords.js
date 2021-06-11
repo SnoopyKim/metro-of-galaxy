@@ -1,62 +1,24 @@
-// 2호선 대략 좌표
-const coords = [
-    [0,0,-50],
-    [ 1, -39, 20 ],
-    [ 6, -39, 20 ],
-    [ 11, -39, 20 ],
-    [ 16, -39, 20 ],
-    [ 24, -39, 20 ],
-    [ 31, -39, 20 ],
-    [ 39, -39, 20 ],
-    [ 45, -36, 20 ],
-    [ 48, -31, 20 ],
-    [ 51, -24, 20 ],
-    [ 51, -19, 20 ],
-    [ 51, -10, 20 ],
-    [ 51, 3, 20 ],
-    [ 51, 7, 20 ],
-    [ 51, 13, 20 ],
-    [ 50, 26, 20 ],
-    [ 46, 31, 20 ],
-    [ 40, 35, 20 ],
-    [ 29, 35, 20 ],
-    [ 18, 35, 20 ],
-    [ 6, 35, 20 ],
-    [ 1, 35, 20 ],
-    [ -5, 35, 20 ],
-    [ -10, 35, 20 ],
-    [ -15, 35, 20 ],
-    [ -25, 35, 20 ],
-    [ -34, 35, 20 ],
-    [ -40, 34, 20 ],
-    [ -47, 30, 20 ],
-    [ -50, 23, 20 ],
-    [ -50, 13, 20 ],
-    [ -50, 2, 20 ],
-    [ -50, -6, 20 ],
-    [ -50, -15, 20 ],
-    [ -49, -28, 20 ],
-    [ -45, -34, 20 ],
-    [ -39, -38, 20 ],
-    [ -31, -39, 20 ],
-    [ -23, -39, 20 ],
-    [ -15, -39, 20 ],
-    [ -7, -39, 20 ],
-]
+const degree = Math.PI / 180;
 
-export default coords;
+export const getCircleCoords = (number, radius = 5, posZ=0) => {
+    if (isNaN(number)) return [];
+    const arr = Array.from({ length: number }, (v, i) => i);
+    return arr.map(i => [radius*(Math.cos(360*degree/number*i)), radius*(Math.sin(360*degree/number*i)), posZ])
+}
 
-const radian = Math.PI / 180;
+export const getRandomRotation = () => {
+    return [ 360*Math.random()*degree, 360*Math.random()*degree, 360*Math.random()*degree ]
+}
 
 export const threeValues = {
     background: {
         position: [ 0, 0, 0 ],
-        rotation: [ 0, 90*radian, 0 ],
+        rotation: [ 0, 90*degree, 0 ],
         sphere: [ 150, 10, 10 ]
     },
     main: {
         position: [ 0, 0, -60 ],
-        rotation: [ 23.4*radian, 0*radian, 23.4*radian ],
+        rotation: [ 23.4*degree, 0*degree, 23.4*degree ],
         sphere: [ 1, 30, 30 ]
     },
 }

@@ -8,16 +8,21 @@ import { Context } from "../../App";
 import icons from '../../resources/icons';
 import Camera from './Camera';
 import PlanetForMain from './PlanetForMain';
+import Planet from "./Planet";
+import { getCircleCoords } from './../../resources/coords';
+import Constellation from "./Constellation";
 
 export default function GalaxyMap() {
     const { station, setStation } = useContext(Context)
 
     return (
         <Canvas style={{position: "absolute"}}>
+            <ambientLight intensity={0.8} />
             <Camera target={station}/>
             <Suspense fallback={<Loading />}>
                 <Background />
                 <PlanetForMain visible={station?.position === threeValues.main.position} />
+                <Constellation position={[0, 0, -10]} />
             </Suspense>
         </Canvas>
     )

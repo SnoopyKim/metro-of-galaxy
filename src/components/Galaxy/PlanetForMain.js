@@ -24,7 +24,7 @@ const PlanetForMain = ({ visible }) => {
                 onPointerEnter={(e) => setHovered(true)}
                 onPointerLeave={(e) => setHovered(false)}>
                 <sphereGeometry args={threeValues.main.sphere} />
-                <meshBasicMaterial 
+                <meshLambertMaterial 
                     attach="material" 
                     color={'#AAA'} 
                     map={planetTexture} />
