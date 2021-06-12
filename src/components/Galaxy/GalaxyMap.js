@@ -4,25 +4,22 @@ import { Html, useProgress, useTexture } from "@react-three/drei";
 import images from "../../resources/images"
 import { BackSide } from "three";
 import coords, { threeValues } from '../../resources/coords';
-import { Context } from "../../App";
 import icons from '../../resources/icons';
 import Camera from './Camera';
 import PlanetForMain from './PlanetForMain';
-import Planet from "./Planet";
-import { getCircleCoords } from './../../resources/coords';
 import Constellation from "./Constellation";
+import { AppContext } from "../../contexts/AppContext";
 
 export default function GalaxyMap() {
-    const { station, setStation } = useContext(Context)
-
+    const { station, setStation, zodiacIdx, setZodiacIdx } = useContext(AppContext)
     return (
         <Canvas style={{position: "absolute"}}>
             <ambientLight intensity={0.8} />
-            <Camera target={station}/>
+            <Camera target={station} />
             <Suspense fallback={<Loading />}>
                 <Background />
                 <PlanetForMain visible={station?.position === threeValues.main.position} />
-                <Constellation position={[0, 0, -30]} />
+                <Constellation position={[0, 0, -30]} zodiacIdx={zodiacIdx}/>
             </Suspense>
         </Canvas>
     )

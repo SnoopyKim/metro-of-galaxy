@@ -5,6 +5,7 @@ import { gsap, Power2 } from 'gsap/gsap-core';
 
 const Camera = ({ target }) => {
     const { camera } = useThree();
+    
     useEffect(() => {
         target ? zoomIn(target?.position) : zoomOut()
     }, [target])

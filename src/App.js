@@ -1,14 +1,12 @@
-import { createContext, useCallback, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import BackButton from "./components/BackButton";
 import GalaxyMap from "./components/Galaxy/GalaxyMap";
+import { AppContext } from "./contexts/AppContext";
 import { threeValues } from "./resources/coords";
 import icons from './resources/icons';
 
-export const Context = createContext();
-
 function App() {
-  const [station, setStation] = useState(null);
-  const contextValue = { station, setStation };
+  const { station, setStation, zodiacIdx, setZodiacIdx } = useContext(AppContext);
 
   const search = (e) => {
     if (e.code === 'Enter') {
@@ -19,14 +17,14 @@ function App() {
   }
 
   return (
-    <Context.Provider value={contextValue}>
+    <>
       <GalaxyMap />
       <div id="ui-container">
         { station && <BackButton /> }
         { station && <span>{station?.name}</span> }
         { !station && <input type="text" onKeyDown={search}/> }
       </div>
-    </Context.Provider>
+    </>
   );
 }
 
