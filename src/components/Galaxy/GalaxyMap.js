@@ -22,7 +22,7 @@ export default function GalaxyMap() {
             <Suspense fallback={<Loading />}>
                 <Background />
                 <PlanetForMain visible={station?.position === threeValues.main.position} />
-                <Constellation position={[0, 0, -10]} />
+                <Constellation position={[0, 0, -30]} />
             </Suspense>
         </Canvas>
     )
