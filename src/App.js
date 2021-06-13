@@ -25,7 +25,7 @@ function App() {
         { station && <BackButton /> }
         { station && <span>{station?.name}</span> }
         { !station && <input type="text" onKeyDown={search}/> }
-        { !station && <ZodiacPanel />}
+        <ZodiacPanel />
       </div>
     </>
   );

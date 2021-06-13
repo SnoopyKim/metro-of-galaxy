@@ -4,17 +4,19 @@ import icons from './../../resources/icons';
 import CircularButton from './../CircularButton/index';
 
 export default function ZodiacPanel() {
-    const { zodiacIdx, setZodiacIdx } = useContext(AppContext)
+    const { station, zodiacIdx, setZodiacIdx } = useContext(AppContext)
     return (
         <div style={{
-            height: '80%',
+            height: '60%',
             position: 'absolute',
             display: 'flex',
             flexDirection: 'column',
-            left: 20,
             top: '50%',
-            transform: `translate(0, -50%)`,
+            transform: station ? `translate(-100%, -50%)` : `translate(100%, -50%)`,
             justifyContent: 'space-between',
+            transitionDuration: '0.5s',
+            transitionProperty: 'transform',
+            transitionTimingFunction: 'ease-in'
         }}>
             <CircularButton img={icons.zodiac.aries.default} selected={zodiacIdx===0} onClick={() => setZodiacIdx(0)} />
             <CircularButton img={icons.zodiac.taurus.default} selected={zodiacIdx===1} onClick={() => setZodiacIdx(1)} />
