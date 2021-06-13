@@ -6,12 +6,12 @@ import { AdditiveBlending } from 'three'
 import colors from './../../resources/colors';
 import images from './../../resources/images';
 
-const PlanetForMain = ({ visible }) => {
+const PlanetForMain = ({ focus }) => {
     const ref = useRef();
     const [hovered, setHovered] = useState(false)
     const [planetTexture, glowTexture] = useTexture([images.earth.default, images.glow.default]) 
     
-    useFrame(() => visible && (ref.current.rotation.y += 0.01))
+    useFrame(() => focus && (ref.current.rotation.y += 0.01))
     return (
         <group 
             ref={ref} 

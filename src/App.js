@@ -4,6 +4,8 @@ import GalaxyMap from "./components/Galaxy/GalaxyMap";
 import { AppContext } from "./contexts/AppContext";
 import { threeValues } from "./resources/coords";
 import icons from './resources/icons';
+import CircularButton from './components/CircularButton/index';
+import ZodiacPanel from "./components/ZodiacPanel";
 
 function App() {
   const { station, setStation, zodiacIdx, setZodiacIdx } = useContext(AppContext);
@@ -23,6 +25,7 @@ function App() {
         { station && <BackButton /> }
         { station && <span>{station?.name}</span> }
         { !station && <input type="text" onKeyDown={search}/> }
+        { !station && <ZodiacPanel />}
       </div>
     </>
   );
