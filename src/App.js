@@ -6,14 +6,40 @@ import { threeValues } from "./resources/coords";
 import icons from './resources/icons';
 import CircularButton from './components/CircularButton/index';
 import ZodiacPanel from "./components/ZodiacPanel";
+import testData from './resources/testData';
+import { getStationInfo, getStations } from "./utils/data";
+
+let stations
 
 function App() {
-  const { station, setStation, zodiacIdx, setZodiacIdx } = useContext(AppContext);
+  const { station, setStation, index, zodiacIdx, setZodiacIdx } = useContext(AppContext);
+  const [stationList, setStationList] = useState([])
+
+  useEffect(() => {
+    const sessionData = sessionStorage.getItem('stations') 
+    if (sessionData) {
+      stations = JSON.parse(sessionData)
+    } else {
+      getStations().then(res => {
+        stations = res
+        sessionStorage.setItem('stations', JSON.stringify(res))
+      })
+    }
+  }, [])
+
+  const handleInput = (e) => {
+    const text = e.target.value;
+    const array = stations?.filter(station => station.indexOf(text) !== -1)
+    setStationList(array)
+  }
 
   const search = (e) => {
     if (e.code === 'Enter') {
       const name = e.target.value;
-      name.length > 0 && setStation({name, position: threeValues.main.position})
+      console.log(name, stationList)
+      if (name.length > 0 && stationList.length > 0) {
+        getStationInfo(stationList[0]).then(res => setStation(res))
+      }
       e.target.value = '';
     }
   }
@@ -23,8 +49,8 @@ function App() {
       <GalaxyMap />
       <div id="ui-container">
         { station && <BackButton /> }
-        { station && <span>{station?.name}</span> }
-        { !station && <input type="text" onKeyDown={search}/> }
+        { station && <span>{stationList[0]}</span> }
+        { !station && <input type="text" onChange={handleInput} onKeyDown={search}/> }
         <ZodiacPanel />
       </div>
     </>

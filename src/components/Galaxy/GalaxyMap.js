@@ -9,16 +9,19 @@ import Camera from './Camera';
 import PlanetForMain from './PlanetForMain';
 import Constellation from "./Constellation";
 import { AppContext } from "../../contexts/AppContext";
+import { selectStationInfo } from "../../utils/data";
 
 export default function GalaxyMap() {
     const { station, setStation, zodiacIdx, setZodiacIdx } = useContext(AppContext)
+    const info = selectStationInfo(station, 5);
+    console.log(info)
     return (
         <Canvas style={{position: "absolute"}}>
             <ambientLight intensity={0.8} />
-            <Camera target={station} />
+            <Camera target={station ? threeValues.main : null} />
             <Suspense fallback={<Loading />}>
                 <Background />
-                <PlanetForMain visible={station?.position === threeValues.main.position} />
+                <PlanetForMain info={info} />
                 <Constellation position={[0, 0, -30]} zodiacIdx={zodiacIdx}/>
             </Suspense>
         </Canvas>

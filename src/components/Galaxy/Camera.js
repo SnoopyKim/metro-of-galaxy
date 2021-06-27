@@ -12,9 +12,9 @@ const Camera = ({ target }) => {
 
     const zoomIn = (pos) => gsap.to(camera.position, {
         duration: 1.5,
-        x: pos[0],
+        x: pos[0] + 2.5,
         y: pos[1],
-        z: pos[2] + 5,
+        z: pos[2] + 4,
         onUpdate: function () {
             camera.updateProjectionMatrix();
         },
