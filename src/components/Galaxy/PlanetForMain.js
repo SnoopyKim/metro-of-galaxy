@@ -1,15 +1,17 @@
-import { useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { useTexture } from '@react-three/drei';
-import { useFrame } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
 import { threeValues } from "../../resources/coords";
 import { AdditiveBlending } from 'three'
 import colors from './../../resources/colors';
 import images from './../../resources/images';
+import { AppContext } from "../../contexts/AppContext";
 
 const PlanetForMain = ({ info }) => {
     const ref = useRef();
-    const [hovered, setHovered] = useState(false)
-    const [planetTexture, glowTexture] = useTexture([images.earth.default, images.glow.default]) 
+    const [hovered, setHovered] = useState(true)
+    const { BackSide, AdditiveBlending } = useThree();
+    const [planetTexture, glowTexture] = useTexture([images.earth.default, images.glow.default])
     
     useFrame(() => info && (ref.current.rotation.y += 0.01))
     return (
@@ -29,16 +31,17 @@ const PlanetForMain = ({ info }) => {
                     color={'#AAA'} 
                     map={planetTexture} />
             </mesh>
-            { hovered && 
-                <sprite scale={[5, 5, 1.0]}>
-                    <spriteMaterial 
-                        attach="material" 
-                        opacity={1.0} 
-                        color={colors.metro.sinbundang} 
-                        blending={AdditiveBlending} 
-                        map={glowTexture} />
-                </sprite> 
-            }
+            {/* <mesh>
+                <sphereGeometry args={[120, 32, 16]} />
+                <shaderMaterial 
+                    uniforms 
+                    vertexShader={document.getElementById('vertexShader').textContent}
+                    fragmentShader={document.getElementById('fragmentShader').textContent}
+                    side={BackSide}
+                    blending={AdditiveBlending}
+                    transparent={true}
+                />
+            </mesh> */}
         </group>
     )
 }

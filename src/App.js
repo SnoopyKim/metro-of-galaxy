@@ -16,11 +16,12 @@ function App() {
   const [stationList, setStationList] = useState([])
 
   useEffect(() => {
-    const sessionData = sessionStorage.getItem('stations') 
+    const sessionData = sessionStorage.getItem('stations')
+    sessionData && console.log(sessionData)
     if (sessionData) {
       stations = JSON.parse(sessionData)
     } else {
-      getStations().then(res => {
+      getStations(false).then(res => {
         stations = res
         sessionStorage.setItem('stations', JSON.stringify(res))
       })
@@ -38,9 +39,12 @@ function App() {
       const name = e.target.value;
       console.log(name, stationList)
       if (name.length > 0 && stationList.length > 0) {
-        getStationInfo(stationList[0]).then(res => setStation(res))
+        getStationInfo(stationList[0], false).then(res => {
+          console.log(res)
+          setStation(res)
+          e.target.value = '';
+        })
       }
-      e.target.value = '';
     }
   }
 
